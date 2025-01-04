@@ -10,7 +10,8 @@ const app = express();
 app.use(morgan("dev"));
 app.use(helmet());
 app.use(compression()); // giảm dung lượng vận chuyển
-
+app.use(express.json())
+app.use(express.urlencoded({ extended: true }))
 // init db 
 require('./dbs/init.mongodb')
 const { checkOverLoad } = require('./helpers/check.connect')

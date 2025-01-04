@@ -6,7 +6,7 @@ const DOCUMENT_NAME = 'Shop'
 const COLLECTION_NAME = 'Shops'
 
 //!dbgm
-var ShopSchema = new mongoose.Schema({
+var ShopSchema = new Schema({
     name: {
         type: String,
         trim: true,
@@ -40,4 +40,4 @@ var ShopSchema = new mongoose.Schema({
 });
 
 //Export the model
-module.exports = mongoose.model(DOCUMENT_NAME, ShopSchema);
+module.exports = model(DOCUMENT_NAME, ShopSchema);
