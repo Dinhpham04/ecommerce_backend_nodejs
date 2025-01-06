@@ -46,7 +46,9 @@ const permission = (permission) => {
     }
 }
 
+
+
 module.exports = {
     apiKey,
-    permission
+    permission,
 }
