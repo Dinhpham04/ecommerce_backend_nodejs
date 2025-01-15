@@ -1,45 +1,47 @@
 'use strict'
 
 const { model, Schema } = require('mongoose');
+const slugify = require('slugify');
 
 const DOCUMENT_NAME = 'Product'
 const COLLECTION_NAME = 'Products'
 
 const productSchema = new Schema({
-    product_name: {
-        type: String,
-        required: true
-    },
-    product_thumb: {
-        type: String,
-        required: true
-    },
-    product_decription: String,
-    product_price: {
+    product_name: { type: String, required: true },
+    product_thumb: { type: String, required: true },
+    product_description: String,
+    product_slug: String, // quan-jean-sl
+    product_price: { type: Number, required: true },
+    product_quantity: { type: Number, required: true },
+    product_type: { type: String, required: true, enum: ['Electronic', 'Clothing', 'Furniture'] },
+    product_shop: { type: Schema.Types.ObjectId, ref: 'Shop', },
+    product_attributes: { type: Schema.Types.Mixed, required: true },
+    // more 
+    product_ratingsAverage: {
         type: Number,
-        required: true
+        default: 4.5,
+        min: [1, 'Rating must be above 1.0'],
+        max: [5, 'Rating must be below 5.0'],
+        // 4.33333 => 4.3 
+        set: (val) => Math.round(val * 10) / 10,
     },
-    product_quantity: {
-        type: Number,
-        required: true
-    },
-    product_type: {
-        type: String,
-        required: true,
-        enum: ['Electronic', 'Clothing', 'Furniture']
-    },
-    product_shop: {
-        type: Schema.Types.ObjectId,
-        ref: 'Shop',
-    },
-    product_attributes: {
-        type: Schema.Types.Mixed,
-        required: true
-    }
+    product_variations: { type: Array, default: [] },
+    isDraft: { type: Boolean, default: true, index: true, select: false }, // select để khi find sẽ không lấy trường này
+    isPublished: { type: Boolean, default: false, index: true, select: false },
 }, {
     timestamps: true,
     collection: COLLECTION_NAME
 })
+
+// create index for search 
+productSchema.index({ product_name: 'text', product_description: 'text' })
+
+// Document middleware: runs before .save() and .create() // trước khi nó save hoặc create thì nó sẽ đi vào middleware 
+productSchema.pre('save', function (next) {
+    this.product_slug = slugify(this.product_name, { lower: true })
+    next()
+})
+
 
 // define the product type = electronic 
 
