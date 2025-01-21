@@ -83,6 +83,10 @@ const queryProduct = async ({ query, limit, skip }) => {
         exec()
 }
 
+const getProductById = async (productId) => {
+    return await product.findById(productId).lean()
+}
+
 
 module.exports = {
     findAllDraftsForShop,
@@ -94,4 +98,5 @@ module.exports = {
     findAllProducts,
     findProduct,
     updateProductById,
+    getProductById
 }
