@@ -210,7 +210,7 @@ class DiscountService {
         return {
             totalOrder,
             discount: amount,
-            totalPrice: totalOrder > amount ? totalOrder - amount : 0,
+            totalPrice: totalOrder >= amount ? totalOrder - amount : 0,
         }
     }
 
