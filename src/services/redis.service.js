@@ -1,5 +1,6 @@
 'use strict'
 
+const { reservationInventory } = require('../models/repositories/inventory.repo')
 const redis = require('redis')
 const { promisify } = require('util')
 const redisClient = redis.createClient()
@@ -19,8 +20,11 @@ const acquireLock = async ({ productId, quantity, cartId }) => {
         console.log(`result:: ${result}`)
         if (result === 1) {
             // thao tac voi inventory
-
-            return key; // de xoa
+            const isReservation = await reservationInventory({productId, quantity, cartId})
+            if (isReservation.modifiedCount) {
+                await pexpire(key, expireTime) // dat thoi gian het han cho key 
+            }
+            return key // de xoa
         } else {
             // thử lấy khóa lại 
             await new Promise((resolve) => setTimeout(resolve, 50)) // gọi hàm resolve() sau 50 giây, resolve chạy chuyển promise sang hoàn thành

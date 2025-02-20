@@ -1,9 +1,11 @@
 'use strict'
 
-const { NotFoundError } = require("../core/error.response")
+const { NotFoundError, BadRequestError } = require("../core/error.response")
 const { findCartByCartId } = require("../models/repositories/cart.repo")
+const { createOrder } = require("../models/repositories/order.repo")
 const { checkProductInDB } = require("../models/repositories/product.repo")
 const { getDiscountAmount } = require("./discount.service")
+const { acquireLock } = require("./redis.service")
 
 /* 
 {
@@ -98,7 +100,7 @@ class CheckoutService {
         }
     }
 
-    static orderByUser({
+    static async orderByUser({
         shopOrderIds,
         cartId,
         userId,
@@ -116,10 +118,61 @@ class CheckoutService {
         // tạo ra một array của item product 
         const products = shopOrderIdsNew.flatMap(order => order.itemProducts)
         console.log(`[1]: ${products}`)
-        
+        const acquireProduct = []
         for (let i = 0; i < products.length; i++) {
             const { productId, quantity } = products[i]
+            const keyLock = await acquireLock({ productId, quantity, cartId }) // tạo khóa cho từng sản phẩm trong giỏ hàng
+            acquireProduct.push(keyLock ? true : false) // mảng lưu các khóa đã tạo, có lấy khóa thành công hay không
+            if (keyLock) {
+                await releaseLock(keyLock)
+            }
         }
+        // neu co 1 san pham het hang trong kho
+        if (acquireProduct.includes(false)) { // không lấy keylock được của 1 sp
+            throw new BadRequestError('Mot so san pham da duoc cap nhap vui long quay lai gio hang')
+        }
+
+        const newOrder = await createOrder({
+            userId, checkoutOrder, userAddress, userPayment, shopOrderIdsNew
+        })
+
+        // trường hợp nếu insert thanh cong, thi remove product khoi gio hang
+        if (newOrder) {
+            // remove product in my cart 
+        }
+        return newOrder
+    }
+
+    /*
+        1> query orders [user]
+    */
+
+    static async getOrderByUser() {
+
+    }
+
+    /*
+        1> query orders using id [user]
+    */
+
+    static async getOneOrderByUser() {
+
+    }
+
+    /*
+        1> cancel orders [user]
+    */
+
+    static async cancelOrderByUser() {
+
+    }
+
+    /*
+        1> update orders status [shop | admin]
+    */
+
+    static async updateOrderStatusByShop() {
+
     }
 }
 
