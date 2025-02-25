@@ -10,7 +10,12 @@
 - get leng: llen list
 - remove element at index: lrem list count value (count > 0 => left ? right)
 - lấy các phần tử trong một khoảng: ltrim list start top
-- 
+- update value: lset list index value
+- insert value before or after index: linsert list before|after value value 
 ## 2. Trường hợp sử dụng 
 - Blocking : trường hợp có 1 vé mà 2 người mua 
 - blpop list time  (0: timeout) // chờ đợi cho đến khi hoàn thành
+- message queue 
+    + Độ tin cậy
+    + Trùng lặp tin nhắn 
+    + Thứ tự tin nhắn
