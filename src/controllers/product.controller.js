@@ -1,6 +1,5 @@
 'use strict'
 
-const ProductService = require('../services/product.service')
 const ProductServiceV2 = require('../services/product.service.v2')
 
 const { SuccessResponse } = require('../core/success.response')
