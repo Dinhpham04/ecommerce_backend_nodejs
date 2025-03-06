@@ -3,6 +3,7 @@
 const { Types } = require('mongoose')
 const { product, electronic, clothing, furniture } = require('../../models/product.model')
 const { getSelectData, unGetSelectData } = require('../../utils')
+const { NotFoundError } = require('../../core/error.response')
 
 const findAllDraftsForShop = async ({ query, limit, skip }) => {
     return await queryProduct({ query, limit, skip })
@@ -87,6 +88,19 @@ const getProductById = async (productId) => {
     return await product.findById(productId).lean()
 }
 
+const checkProductInDB = async ({ products }) => {
+    return await Promise.all(products.map(async product => {
+        const foundProduct = await getProductById(product.productId)
+        if (foundProduct) {
+            return {
+                productId: foundProduct._id,
+                price: foundProduct.product_price,
+                quantity: product.quantity
+            }
+        }
+    }))
+}
+
 
 module.exports = {
     findAllDraftsForShop,
@@ -98,5 +112,6 @@ module.exports = {
     findAllProducts,
     findProduct,
     updateProductById,
-    getProductById
+    getProductById,
+    checkProductInDB
 }

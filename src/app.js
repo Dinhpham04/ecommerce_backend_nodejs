@@ -6,12 +6,14 @@ const { default: helmet } = require('helmet');
 const compression = require('compression');
 const app = express();
 
+
 // init middleware 
 app.use(morgan("dev"));
 app.use(helmet());
 app.use(compression()); // giảm dung lượng vận chuyển
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
+
 // init db 
 require('./dbs/init.mongodb')
 const { checkOverLoad } = require('./helpers/check.connect')
@@ -20,7 +22,6 @@ const { checkOverLoad } = require('./helpers/check.connect')
 app.use('', require('../src/routers'))
 
 // handling error 
-
 app.use((req, res, next) => { // middleware
     const error = new Error('Not found')
     error.status = 404
@@ -32,7 +33,7 @@ app.use((error, req, res, next) => { // hàm quản lý lỗi
     return res.status(statusCode).json({
         status: 'error',
         code: statusCode,
-        stack: error.stack,
+        // stack: error.stack,
         message: error.message || `Internal Server Error`
     })
 })
