@@ -10,7 +10,11 @@ const runProducer = async () => {
         await channel.assertQueue(queueName, { durable: true })
 
         // send messages to consumer channel 
-        channel.sendToQueue(queueName, Buffer.from(message))
+        await channel.sendToQueue(queueName, Buffer.from(message), {
+            // expiration: 10000 // set expiration
+            persistent: true // lưu tin nhắn vào ổ đĩa hoặc catch
+        }) // set expiration 
+
         console.log(`messages send: ${message}`)
     } catch (error) {
         console.error(error)
