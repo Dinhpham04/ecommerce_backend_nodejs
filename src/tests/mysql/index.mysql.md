@@ -29,3 +29,39 @@ delete from users where (usr_id = 1);
 select version();
 
 explain select * from users where usr_id = 1;
+
+-- index = idx_email_age_name 
+explain select * from users where usr_email = 'ronaldo@gmail.com';
+explain select * from users where usr_email = 'ronaldo@gmail.com' and usr_age = 38;
+explain select * from users where usr_email = 'ronaldo@gmail.com' and usr_age = 38 and usr_name = 'ronaldo';
+
+explain select * from users where usr_age = 38;
+explain select * from users where usr_age = 38 and usr_name = 'ronaldo';
+
+-- SELECT * 
+explain select usr_email from users where usr_age = 38; -- Sử dụng index 
+-- Nếu các cột truy vấn bao gồm các cột đánh index thì sẽ được sử dụng index
+
+-- Nói không với tính toán trên chỉ mục khi truy vấn 
+explain select * from users where usr_id + 1 = 2;
+
+-- idx_status 
+explain select * from users where substr(usr_status,1 , 2) = 1; -- không sử dụng index 
+
+-- truy vấn sai kiểu dữ liệu 
+explain select * from users where usr_status = '1';
+
+-- like % 
+explain select * from users where usr_email  like '%@%'; -- not index
+explain select * from users where usr_email  like 'ronaldo@%'; -- have index
+explain select * from users where usr_email  like '%.com'; -- not index
+
+-- OR 
+explain select * from users where usr_id = 1 OR usr_status = 0; -- use index
+explain select * from users where usr_id = 1 OR usr_status = 0 or usr_address = 'hanoi'; -- not use index because usr_address not have index
+explain select * from users where usr_id = 1 OR usr_status = 0 or usr_email = 'dinhpham'; -- user composite index
+
+-- order by
+
+explain select * from users where usr_email = 'abc' order by usr_email, usr_name; -- use index
+explain select * from users order by usr_email, usr_name; -- not use index because not have where or limit
