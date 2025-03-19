@@ -11,10 +11,10 @@ const storageDisk = multer.diskStorage({
     }
 })
 
-const uploadDisk = multer({ storage: storageDisk })
+const uploadDisk = multer({ storage: storageDisk }) // save to disk 
 
 const storageMemory = multer.memoryStorage()
-const uploadMemory = multer({ storage: storageMemory })
+const uploadMemory = multer({ storage: storageMemory }) // save to RAM 
 
 module.exports = {
     uploadDisk,
