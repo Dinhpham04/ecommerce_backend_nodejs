@@ -8,7 +8,11 @@ const {
     PutObjectCommand
 } = require('../configs/s3.config')
 
-const { getSignedUrl } = require('@aws-sdk/s3-request-presigner')
+// get public url using s3
+// const { getSignedUrl } = require('@aws-sdk/s3-request-presigner')
+
+// get signed url using cloudfront-signer
+const { getSignedUrl } = require("@aws-sdk/cloudfront-signer")
 
 // UPLOAD FILE USING CLOUDINARY AND MULTER
 
@@ -68,18 +72,27 @@ const uploadFileFromLocalS3 = async ({ file }) => {
         Bucket: process.env.AWS_BUCKET_NAME,
         Key: fileName || 'unknown', // ten cua file
         Body: file.buffer,
-        ContentType: 'image/jpeg/jpg', // that is what your need 
+        ContentType: 'image/jpeg', // that is what your need 
     })
+    const result = await s3.send(command)
 
-    // export url public
-    await s3.send(command)
-    const signedUrl = new GetObjectCommand({
-        Bucket: process.env.AWS_BUCKET_NAME,
-        Key: fileName,
-    })
-    const url = await getSignedUrl(s3, signedUrl, { expiresIn: 3600 });
+    // export url public using getSignedUrl s3
+    // const signedUrl = new GetObjectCommand({
+    //     Bucket: process.env.AWS_BUCKET_NAME,
+    //     Key: fileName,
+    // })
+    // const urlS3 = await getSignedUrl(s3, signedUrl, { expiresIn: 3600 });
+
+    // export url public using cloudfront-signer
+    const signedUrl = getSignedUrl({
+        url: `${process.env.CLOUDFRONT_IMAGE_PUBLIC_URL}/${fileName}`, // url cần ký
+        keyPairId: process.env.AWS_BUCKET_PUBLIC_KEY_ID, // id của public key
+        dateLessThan: new Date(Date.now() + 1000 * 60),
+        privateKey: process.env.AWS_BUCKET_PRIVATE_KEY,
+    });
     return {
-        fileName, url
+        signedUrl,
+        result,
     }
 }
 
