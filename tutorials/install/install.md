@@ -1,0 +1,3 @@
+- 1. Cài đặt openssl để tạo khóa rsa 
+- 2. Chạy lệnh openssl genrsa -out private_key.pem 2048;
+- 3. Tạo khóa public: openssl rsa -pubout -in private_key.pem -out public_key.pem
