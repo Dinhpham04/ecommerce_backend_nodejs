@@ -6,9 +6,11 @@ const { asyncHandler } = require('../../helpers/asyncHandler');
 
 const router = express.Router();
 
-router.get('/status', asyncHandler(() => {
-    return { message: 'Hello, World!', status: 'success' };
+router.get('/status', asyncHandler((req, res, next) => {
+    res.status(200).json({ message: 'Hello, World!', status: 'success' });
 }))
+
+
 
 module.exports = router
 
