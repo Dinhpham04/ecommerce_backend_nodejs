@@ -1,7 +1,8 @@
 'use strict';
 
 const AccessService = require("../services/access.service");
-const { OK, CREATED, SuccessResponse } = require('../core/success.response')
+const { OK, CREATED, SuccessResponse } = require('../core/success.response');
+const { NotFoundError } = require("../core/error.response");
 
 class AccessController {
 
@@ -30,6 +31,10 @@ class AccessController {
     }
 
     login = async (req, res, next) => {
+        const { email } = req.body
+        if (!email) {
+            throw new NotFoundError('email not found!')
+        }
         new SuccessResponse({
             message: 'Login successfully!',
             metadata: await AccessService.login(req.body),

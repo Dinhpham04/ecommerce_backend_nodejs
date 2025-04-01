@@ -55,9 +55,9 @@ const createRole = async ({
     // 2. create new role 
     const role = await ROLE.create({
         rol_name: name,
-        role_slug: slug,
-        role_description: description,
-        role_grants: grants
+        rol_slug: slug,
+        rol_description: description,
+        rol_grants: grants
     })
 
     return role
@@ -69,7 +69,45 @@ const roleList = async ({
     offset = 0,
     search = '',
 }) => {
+    //check role user 
+    const roles = await ROLE.aggregate([
+        {
+            $unwind: '$rol_grants'
+        },
+        {
+            $lookup: {
+                from: 'Resources',
+                localField: 'rol_grants.resource',
+                foreignField: '_id',
+                as: 'resource'
+            }
+        },
+        {
+            $unwind: '$resource'
+        },
+        {
+            $project: {
+                role: '$rol_name',
+                resource: '$resource.src_name',
+                action: '$rol_grants.actions',
+                attributes: '$rol_grants.attributes',
+            }
+        },
+        {
+            $unwind: '$action'
+        },
+        {
+            $project: {
+                _id: 0,
+                role: 1,
+                resource: 1,
+                action: '$action',
+                attributes: 1
+            }
+        }
+    ])
 
+    return roles;
 }
 
 module.exports = {
@@ -78,3 +116,5 @@ module.exports = {
     createRole,
     roleList,
 }
+
+// để tăng tốc độ đưa dữ liệu vào catch 

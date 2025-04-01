@@ -14,6 +14,4 @@ const resourceSchema = new Schema({
     timestamps: true,
 })
 
-module.exports = {
-    cart: model(DOCUMENT_NAME, resourceSchema)
-}
+module.exports = model(DOCUMENT_NAME, resourceSchema)

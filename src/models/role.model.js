@@ -35,6 +35,4 @@ const roleSchema = new Schema({
     timestamps: true,
 })
 
-module.exports = {
-    cart: model(DOCUMENT_NAME, roleSchema)
-}
+module.exports = model(DOCUMENT_NAME, roleSchema)
