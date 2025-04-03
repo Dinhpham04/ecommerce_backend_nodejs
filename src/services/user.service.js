@@ -4,6 +4,9 @@ const {
 } = require('../models/repositories/user.repo')
 const { ConflictRequestError } = require('../core/error.response');
 const { SuccessResponse } = require('../core/success.response');
+const { sendEmailToken } = require('./email.service');
+
+
 const newUser = async ({
     email = null,
     capcha = null
@@ -17,11 +20,12 @@ const newUser = async ({
     }
 
     // 3. send token via email 
+    const result = await sendEmailToken({ email })
+    return {
+        token: result
+    }
+}
 
-    return new SuccessResponse({
-        message: 'verify email user',
-        metadata: {
-            token
-        }
-    })
+module.exports = {
+    newUser
 }

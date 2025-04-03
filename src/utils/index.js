@@ -52,6 +52,7 @@ const replacePlaceholder = (template, params) => {
         const placeholder = `{{${k}}}` // verifykey 
         template = template.replace(new RegExp(placeholder, 'g'), params[k])
     })
+    return template
 }
 
 module.exports = {

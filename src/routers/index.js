@@ -13,6 +13,8 @@ router.use(apiKey)
 router.use(permission('0000'))
 
 // routers
+router.use('/v1/api/user', require('./user'))
+router.use('/v1/api/email', require('./email'))
 router.use('/v1/api/rbac', require('./rbac'))
 router.use('/v1/api/upload', require('./upload'))
 router.use('/v1/api/notify', require('./notify'))

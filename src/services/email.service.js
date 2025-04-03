@@ -8,8 +8,8 @@ const { replacePlaceholder } = require('../utils');
 const sendEmailLinkVerify = ({
     html,
     toEmail,
-    subject = 'Xác nhận email đăng ký',
-    text = 'Xác nhận'
+    subject = 'Vui lòng xác nhận địa chỉ email đăng ký',
+    text = 'Xác nhận tài khoản này là của bạn'
 }) => {
     try {
         const mailOptions = {
@@ -19,7 +19,7 @@ const sendEmailLinkVerify = ({
             text,
             html
         }
-        transport.sendMail(mailOptions, (error, info) => {
+        const info = transport.sendMail(mailOptions, (error, info) => {
             if (error) {
                 return console.log(error)
             }
@@ -31,12 +31,16 @@ const sendEmailLinkVerify = ({
         return error;
     }
 }
+
 const sendEmailToken = async (
-    email = null
+    { email = null }
 ) => {
     try {
         // 1. get token 
         const token = await newOtp({ email })
+        if (!token) {
+            throw new NotFoundError('token not found')
+        }
         // 2. get email template 
         const template = await getTemplate({
             tem_name: 'HTML EMAIL TOKEN',
@@ -46,21 +50,25 @@ const sendEmailToken = async (
             throw new NotFoundError('template not found')
         }
 
+
         // 3. replace placeholder
         const content = replacePlaceholder(
             template.tem_html,
             {
-
+                link_verify: `http://localhost:3052/cgp/welcome-back?token=${token.otp_token}`,
             }
         )
-        // 4. send email 
+        //4. send email 
         sendEmailLinkVerify({
-            html,
+            html: content,
             toEmail: email,
             subject: 'Vui lòng xác nhận địa chỉ email đăng ký'
         })
-    } catch (error) {
 
+        return 1
+    } catch (error) {
+        console.error(`error send email`, error)
+        return error
     }
 }
 
