@@ -1,17 +1,12 @@
 'use strict'
 
 const { ReasonPhrases, StatusCodes } = require("../utils/httpStatusCode")
-// const logger = require('../loggers/winston.log')
-const Mylogger = require('../loggers/mylogger.log')
-
 class ErrorResponse extends Error {
 
     constructor(message, status) {
         super(message)
         this.status = status
-
-        // Log the error use winston 
-        Mylogger.error(this.message, ['v1/api/login', 'v3344', { error: 'Bad' }])
+        this.now = Date.now()
     }
 }
 

@@ -1,4 +1,12 @@
 
+/**
+ * error: nghiem trong anh huong toi hoat dong cua doanh nghiep
+ * warning: it anh huong nhung can quan tam sau nay
+ * debug: 
+ * info: nhat ky thong tin ghi lai thongo tin quan trong nhu thoi gian, thong so dau vao, ra 
+ * requestId or traceId: la thong tin chi tiet nhat 
+ */
+
 'use strict';
 const winston = require('winston');
 const { createLogger, format, transports, } = require('winston');
@@ -24,7 +32,7 @@ class Mylogger {
                 new transports.DailyRotateFile({
                     dirname: 'src/logs',
                     filename: 'application-%DATE%.info.log',
-                    datePattern: 'YYYY-MM-DD-HH-mm',
+                    datePattern: 'YYYY-MM-DD',
                     zippedArchive: false, // luu tru file zip truoc khi xoa
                     maxSize: '20m', // dung luong file
                     maxFiles: '14d', // neu dat qua 14 ngay thi xoa
@@ -37,7 +45,7 @@ class Mylogger {
                 new transports.DailyRotateFile({
                     dirname: 'src/logs',
                     filename: 'application-%DATE%.error.log',
-                    datePattern: 'YYYY-MM-DD-HH-mm',
+                    datePattern: 'YYYY-MM-DD',
                     zippedArchive: false, // luu tru file zip truoc khi xoa
                     maxSize: '20m', // dung luong file
                     maxFiles: '14d', // neu dat qua 14 ngay thi xoa
@@ -46,7 +54,7 @@ class Mylogger {
                         formatPrint
                     ),
                     level: 'error',
-                })
+                }),
             ]
 
         })
@@ -67,14 +75,6 @@ class Mylogger {
             requestId,
             metadata
         }
-    }
-
-    log(message, params) {
-        const paramsLog = this.commonParams(params)
-        const logObject = Object.assign({
-            message
-        }, paramsLog)
-        this.logger.log(logObject)
     }
 
     info(message, params) {

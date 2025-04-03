@@ -30,6 +30,4 @@ const userSchema = new Schema({
     // }
 })
 
-module.exports = {
-    cart: model(DOCUMENT_NAME, userSchema)
-}
+module.exports = model(DOCUMENT_NAME, userSchema)
