@@ -55,6 +55,11 @@ const replacePlaceholder = (template, params) => {
     return template
 }
 
+// random product id
+const randomProductId = () => {
+    return Math.floor(Math.random() * 8999999 + 1000000)
+}
+
 module.exports = {
     getInfoData,
     getSelectData,
@@ -62,5 +67,6 @@ module.exports = {
     removeUndefinedObject,
     updateNestedObjectParser,
     convertToObjectIdMongoDb,
-    replacePlaceholder
+    replacePlaceholder,
+    randomProductId
 }

@@ -10,7 +10,7 @@ const otpSchema = new Schema({
     expireAt: {
         type: Date,
         default: Date.now(),
-        expires: 60 // 60 seconds
+        expires: 300 // 60 seconds
     }
 }, {
     timestamps: true,

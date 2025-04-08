@@ -7,6 +7,7 @@ const compression = require('compression');
 const app = express();
 const { v4: uuidv4 } = require('uuid')
 const Mylogger = require('./loggers/mylogger.log')
+const { asyncHandler } = require('./helpers/asyncHandler');
 
 // init middleware 
 app.use(morgan("dev"));
@@ -14,6 +15,8 @@ app.use(helmet());
 app.use(compression()); // giảm dung lượng vận chuyển
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
+
+// register info api to logger
 app.use((req, res, next) => {
     const requestId = req.headers['x-request-id']
     req.requestId = requestId ? requestId : uuidv4()
@@ -27,8 +30,13 @@ app.use((req, res, next) => {
 
 // init db 
 require('./dbs/init.mongodb')
-const { checkOverLoad } = require('./helpers/check.connect')
+const redisDB = require('./dbs/init.redis')
+redisDB.initRedis()
+
+// check over load
+const { checkOverLoad } = require('./helpers/check.connect');
 // checkOverLoad(); // check over load 
+
 // init router
 app.use('', require('../src/routers'))
 
@@ -39,7 +47,8 @@ app.use((req, res, next) => { // middleware sử lý trường hợp không bắ
     next(error)
 })
 
-app.use((error, req, res, next) => { // hàm quản lý lỗi 
+// catch error and register to logger 
+app.use((error, req, res, next) => {
     const statusCode = error.status || 500
     const resMessage = `${error.status}::${Date.now() - error.now}ms -Response: ${JSON.stringify(error)}`
     Mylogger.error(resMessage, [

@@ -1,6 +1,7 @@
 'use strict';
 const crypto = require('crypto');
-const OTP = require('../models/otp.model')
+const OTP = require('../models/otp.model');
+const { NotFoundError } = require('../core/error.response');
 
 const generatorTokenRandom = () => {
     const token = crypto.randomInt(0, Math.pow(2, 32))
@@ -15,6 +16,24 @@ const newOtp = async ({ email }) => {
     })
     return newToken
 }
+
+const checkEmailToken = async ({ token }) => {
+    // check token in model otp
+    const tokenCheck = await OTP.findOne({
+        otp_token: token
+    })
+    if (!tokenCheck) {
+        throw new NotFoundError(`Token not found`)
+    }
+
+    //delete token from model 
+    await OTP.deleteOne({
+        otp_token: token
+    })
+
+    return tokenCheck; // chứa thông tin opt_email
+}
 module.exports = {
-    newOtp
+    newOtp,
+    checkEmailToken
 }

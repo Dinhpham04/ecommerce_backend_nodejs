@@ -3,7 +3,10 @@
 const { reservationInventory } = require('../models/repositories/inventory.repo')
 const redis = require('redis')
 const { promisify } = require('util')
-const redisClient = redis.createClient()
+const { getRedis } = require('../dbs/init.redis')
+const {
+    instanceConnect: redisClient // lấy thuộc tính instanceConnect và gán cho redisClient
+} = getRedis()
 
 const pexpire = promisify(redisClient.pExpire).bind(redisClient) // hàm đặt thời gian hết hạn cho một key
 const setnxAsync = promisify(redisClient.setNX).bind(redisClient) // hàm set giá trị cho Key chỉ khi key chưa tồn tại
@@ -20,7 +23,7 @@ const acquireLock = async ({ productId, quantity, cartId }) => {
         console.log(`result:: ${result}`)
         if (result === 1) {
             // thao tac voi inventory
-            const isReservation = await reservationInventory({productId, quantity, cartId})
+            const isReservation = await reservationInventory({ productId, quantity, cartId })
             if (isReservation.modifiedCount) {
                 await pexpire(key, expireTime) // dat thoi gian het han cho key 
             }

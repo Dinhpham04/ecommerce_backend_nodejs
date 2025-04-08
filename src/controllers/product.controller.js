@@ -3,8 +3,50 @@
 const ProductServiceV2 = require('../services/product.service.v2')
 
 const { SuccessResponse } = require('../core/success.response')
+const { newSpu, getOneSpu } = require('../services/spu.service')
+const { oneSku } = require('../services/sku.service')
 
 class ProductController {
+
+    oneSpu = async (req, res, next) => {
+        try {
+            const { productId } = req.query
+            new SuccessResponse({
+                message: 'Get spu successfully',
+                metadata: await getOneSpu({ productId })
+            }).send(res)
+        } catch (error) {
+            next(error)
+        }
+    }
+
+    findOneSku = async (req, res, next) => {
+        try {
+            const { skuId, productId } = req.query
+            new SuccessResponse({
+                message: 'Get sku one by id successfully',
+                metadata: await oneSku({ skuId, productId })
+            }).send(res)
+        } catch (error) {
+            next(error)
+        }
+    }
+
+    // SPU, SKU 
+    createSpu = async (req, res, next) => {
+        try {
+            const spu = await newSpu({
+                ...req.body,
+                product_shop: req.user.userId,
+            })
+            new SuccessResponse({
+                message: 'Create new spu successfully',
+                metadata: spu
+            }).send(res)
+        } catch (error) {
+            next(error)
+        }
+    }
 
     createNewProduct = async (req, res, next) => {
         new SuccessResponse({

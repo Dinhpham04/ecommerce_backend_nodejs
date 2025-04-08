@@ -1,21 +1,25 @@
 'use strict';
 
 const { SuccessResponse } = require("../core/success.response");
-const { newUser } = require("../services/user.service");
+const { sendEmailVerify, checkLoginEmailTokenService } = require("../services/user.service");
 
 class UserController {
 
     // new user
-    newUserAccount = async (req, res, next) => {
+    sendEmailVerifyToUser = async (req, res, next) => {
         new SuccessResponse({
-            message: 'create new user successfully',
-            metadata: await newUser(req.body)
+            message: 'please check your email to verify your account',
+            metadata: await sendEmailVerify(req.body)
         }).send(res)
     }
 
     // check user token via Email
-    checkRegisterEmailToken = async () => {
-
+    checkLoginEmailToken = async (req, res, next) => {
+        const { token = null } = req.query
+        new SuccessResponse({
+            message: 'check login email token success, your account is created',
+            metadata: await checkLoginEmailTokenService({ token })
+        }).send(res)
     }
 
 }

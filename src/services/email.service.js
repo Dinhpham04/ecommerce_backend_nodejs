@@ -35,41 +35,35 @@ const sendEmailLinkVerify = ({
 const sendEmailToken = async (
     { email = null }
 ) => {
-    try {
-        // 1. get token 
-        const token = await newOtp({ email })
-        if (!token) {
-            throw new NotFoundError('token not found')
-        }
-        // 2. get email template 
-        const template = await getTemplate({
-            tem_name: 'HTML EMAIL TOKEN',
-        })
-
-        if (!template) {
-            throw new NotFoundError('template not found')
-        }
-
-
-        // 3. replace placeholder
-        const content = replacePlaceholder(
-            template.tem_html,
-            {
-                link_verify: `http://localhost:3052/cgp/welcome-back?token=${token.otp_token}`,
-            }
-        )
-        //4. send email 
-        sendEmailLinkVerify({
-            html: content,
-            toEmail: email,
-            subject: 'Vui lòng xác nhận địa chỉ email đăng ký'
-        })
-
-        return 1
-    } catch (error) {
-        console.error(`error send email`, error)
-        return error
+    // 1. get token 
+    const token = await newOtp({ email })
+    if (!token) {
+        throw new NotFoundError('token not found')
     }
+    // 2. get email template 
+    const template = await getTemplate({
+        tem_name: 'HTML EMAIL TOKEN',
+    })
+
+    if (!template) {
+        throw new NotFoundError('template not found')
+    }
+
+
+    // 3. replace placeholder
+    const content = replacePlaceholder(
+        template.tem_html,
+        {
+            link_verify: `http://localhost:3052/v1/api/user/verify-email?token=${token.otp_token}`,
+        }
+    )
+    //4. send email 
+    sendEmailLinkVerify({
+        html: content,
+        toEmail: email,
+        subject: 'Vui lòng xác nhận địa chỉ email đăng ký'
+    })
+
 }
 
 module.exports = {
