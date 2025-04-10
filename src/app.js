@@ -33,6 +33,12 @@ require('./dbs/init.mongodb')
 const redisDB = require('./dbs/init.redis')
 redisDB.initRedis()
 
+// ioRedis 
+const ioredis = require('./dbs/init.ioredis')
+ioredis.init({
+    IOREDIS_IS_ENABLE: true
+})
+
 // check over load
 const { checkOverLoad } = require('./helpers/check.connect');
 // checkOverLoad(); // check over load 

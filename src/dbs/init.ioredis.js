@@ -1,9 +1,9 @@
 'use strict';
 
-const redis = require('redis');
+const Redis = require('ioredis');
 const { RedisErrorResponse } = require('../core/error.response');
 
-let client = {}, statusConnectRedis = {
+let clients = {}, statusConnectRedis = {
     CONNECT: 'connect',
     END: 'end',
     RECONNECT: 'reconnecting',
@@ -36,44 +36,53 @@ const handleEventConnection = ({
 }) => {
     // check if connection is null
     connectionRedis.on(statusConnectRedis.CONNECT, () => {
-        console.log(`connectionRedis - Connection status: connected`)
+        console.log(`connectionIORedis - Connection status: connected`)
         clearTimeout(connectionTimeout) // clear timeout when connected
     })
 
     connectionRedis.on(statusConnectRedis.END, () => {
-        console.log(`connectionRedis - Connection status: disconnected`)
+        console.log(`connectionIORedis - Connection status: disconnected`)
         // connect retry 
         handleTimeoutError()
     })
 
     connectionRedis.on(statusConnectRedis.RECONNECT, () => {
-        console.log(`connectionRedis - Connection status: Reconnecting`)
+        console.log(`connectionIORedis - Connection status: Reconnecting`)
         clearTimeout(connectionTimeout) // clear timeout when connected
     })
 
     connectionRedis.on(statusConnectRedis.ERROR, (err) => {
-        console.log(`connectionRedis - Connection status: error ${err}`)
+        console.log(`connectionIORedis - Connection status: error ${err}`)
         handleTimeoutError()
     })
 }
-const initRedis = async () => {
-    const instanceRedis = redis.createClient()
-    client.instanceConnect = instanceRedis
-    handleEventConnection({ connectionRedis: instanceRedis })
-    await instanceRedis.connect()
+
+const init = async ({
+    IOREDIS_IS_ENABLE,
+    IOREDIS_HOST = process.env.REDIS_CACHE_HOST || "localhost",
+    IOREDIS_PORT = 6379
+}) => {
+    if (IOREDIS_IS_ENABLE) {
+        const instanceRedis = new Redis({
+            host: IOREDIS_HOST,
+            post: IOREDIS_PORT
+        })
+        clients.instanceConnect = instanceRedis
+        handleEventConnection({ connectionRedis: instanceRedis })
+    }
 }
 
-const getRedis = () => client
+const getIORedis = () => clients
 
 // close redis connection 
-const closeRedis = async () => {
-    if (client.instanceConnect) {
-        await client.instanceConnect.quit()
+const closeIORedis = async () => {
+    if (clients.instanceConnect) {
+        await clients.instanceConnect.quit()
     }
 }
 
 module.exports = {
-    initRedis,
-    getRedis,
-    closeRedis
+    init,
+    getIORedis,
+    closeIORedis
 }
