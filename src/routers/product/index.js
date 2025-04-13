@@ -5,9 +5,10 @@ const productController = require('../../controllers/product.controller');
 const commentController = require('../../controllers/comment.controller');
 const { asyncHandler } = require('../../helpers/asyncHandler');
 const { authenticationV2 } = require('../../auth/authUtils');
+const { readCache } = require('../../middlewares/cache.middleware');
 const router = express.Router();
 
-router.get('/search/select_variation', asyncHandler(productController.findOneSku))
+router.get('/search/select_variation', readCache, asyncHandler(productController.findOneSku))
 router.get('/search/:keySearch', asyncHandler(productController.getListSearchProducts))
 router.get('', asyncHandler(productController.getAllProducts))
 router.get('/:product_id', asyncHandler(productController.getProduct))

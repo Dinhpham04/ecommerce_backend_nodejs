@@ -1,7 +1,7 @@
 'use strict';
 
 const { getIORedis } = require('../../dbs/init.ioredis')
-const redisCache = getIORedis.instanceConnect
+const redisCache = getIORedis().instanceConnect
 
 const setCacheIO = async ({
     key, value

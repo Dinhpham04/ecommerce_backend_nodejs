@@ -5,7 +5,7 @@ const { randomProductId } = require('../utils');
 const { findSpu } = require('../models/repositories/spu.repo');
 const { NotFoundError } = require('../core/error.response');
 const { CACHE_PRODUCT } = require('../configs/constant');
-const { getCacheIO, setCacheIOExpiration } = require('../models/repositories/cache.repo');
+const { setCacheIOExpiration } = require('../models/repositories/cache.repo');
 
 const newSku = async ({
     spu_id,
@@ -25,41 +25,30 @@ const newSku = async ({
 const oneSku = async ({ skuId, productId }) => {
     try {
         // 1. check params 
-        if (skuId < 0 || productId) return null;
-
-        // read cached
-        const skuKeyCache = `${CACHE_PRODUCT.SKU}${skuId}` // key cache 
-        let skuCache = await getCacheIO({ key: skuKeyCache })
-        if (skuCache) {
-            return {
-                ...JSON.parse(skuCache),
-                toLoad: 'cache' // dbs
-            }
-        }
-
+        if (skuId < 0 || productId < 0) return null;
         // 3 read from db if cache not exists
-        if (!skuCache) {
-            // read from dbs 
-            skuCache = await skuModel.findOne({
-                sku_id: skuId,
-                product_id: productId
-            }).lean()
+        const skuKeyCache = `${CACHE_PRODUCT.SKU}${skuId}`
 
-            const valueCache = skuCache ? skuCache : null
-            setCacheIOExpiration({
-                skuKeyCache,
-                skuCache,
-                expirationInSeconds: 30
-            }).then()
-        }
+        // read from dbs 
+        const skuCache = await skuModel.findOne({
+            sku_id: skuId,
+            product_id: productId
+        }).lean()
+
+        const valueCache = skuCache ? skuCache : null
+        setCacheIOExpiration({
+            key: skuKeyCache,
+            value: JSON.stringify(valueCache),
+            expirationInSeconds: 3600
+        }).then()
 
         // return _.omit(sku, ['__v', 'updatedAt', 'createdAt', 'isDeleted'])
         return {
-            ...JSON.parse(skuCache),
+            ...skuCache,
             toLoad: 'dbs'
         }
-
     } catch (error) {
+        console.log(error.message);
         throw error
     }
 }
