@@ -2,41 +2,66 @@
 
 const USER = require('../user.model')
 
-const findUserByEmail = async ({ email }) => {
-    return await USER.findOne({ usr_email: email }).lean()
+const findUserByEmail = async ({ email, select = null }) => {
+    const query = USER.findOne({ email });
+    if (select) {
+        query.select(select);
+    }
+    return await query.lean();
+}
+
+const findUserById = async (userId) => {
+    return await USER.findById(userId).lean()
+}
+
+const findUser = async (query, select = null) => {
+    const userQuery = USER.findOne(query);
+    if (select) {
+        userQuery.select(select);
+    }
+    return userQuery.lean();
 }
 
 const createNewUser = async ({
-    usrId,
-    usrSlug,
-    usrName,
-    usrPassword,
-    usrSalt,
-    usrEmail,
-    usrPhone,
-    usrSex,
-    usrAvatar,
-    usrDateOfBirth,
-    usrRole,
-    usrStatus
+    user_id,
+    user_name,
+    full_name,
+    first_name,
+    last_name,
+    email,
+    phone,
+    password,
+    gender,
+    date_of_birth,
+    avatar,
+    role = 'customer',
+    status = 'pending'
 }) => {
     return await USER.create({
-        usr_id: usrId,
-        usr_slug: usrSlug,
-        usr_name: usrName,
-        usr_password: usrPassword,
-        usr_salt: usrSalt,
-        usr_email: usrEmail,
-        usr_phone: usrPhone,
-        usr_sex: usrSex,
-        usr_avatar: usrAvatar,
-        usr_date_of_birth: usrDateOfBirth,
-        usr_role: usrRole,
-        usr_status: usrStatus
+        user_id,
+        user_name,
+        full_name,
+        first_name,
+        last_name,
+        email,
+        phone,
+        password,
+        gender,
+        date_of_birth,
+        avatar,
+        role,
+        status
     })
+}
+
+const updateUserById = async (userId, updateData) => {
+    return await USER.findByIdAndUpdate(userId, updateData, { new: true }).lean()
 }
 
 module.exports = {
     findUserByEmail,
-    createNewUser
+    findUserById,
+    createNewUser,
+    updateUserById,
+    findUser
 }

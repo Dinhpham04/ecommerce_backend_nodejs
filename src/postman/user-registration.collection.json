@@ -1,0 +1,159 @@
+{
+    "info": {
+        "name": "User Registration API",
+        "description": "Complete user registration flow with email verification",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+        {
+            "name": "1. Send Email Verification",
+            "request": {
+                "method": "POST",
+                "header": [
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                    },
+                    {
+                        "key": "x-api-key",
+                        "value": "your-api-key-here"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n  \"email\": \"user@example.com\"\n}"
+                },
+                "url": {
+                    "raw": "{{base_url}}/v1/api/user/register/send-verification",
+                    "host": [
+                        "{{base_url}}"
+                    ],
+                    "path": [
+                        "v1",
+                        "api",
+                        "user",
+                        "register",
+                        "send-verification"
+                    ]
+                }
+            }
+        },
+        {
+            "name": "2. Complete Registration",
+            "request": {
+                "method": "POST",
+                "header": [
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                    },
+                    {
+                        "key": "x-api-key",
+                        "value": "your-api-key-here"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n  \"password\": \"SecurePassword123\",\n  \"full_name\": \"Nguyen Van A\",\n  \"phone\": \"0123456789\"\n}"
+                },
+                "url": {
+                    "raw": "{{base_url}}/v1/api/user/register/complete?token={{verification_token}}",
+                    "host": [
+                        "{{base_url}}"
+                    ],
+                    "path": [
+                        "v1",
+                        "api",
+                        "user",
+                        "register",
+                        "complete"
+                    ],
+                    "query": [
+                        {
+                            "key": "token",
+                            "value": "{{verification_token}}"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "name": "3. User Login",
+            "request": {
+                "method": "POST",
+                "header": [
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                    },
+                    {
+                        "key": "x-api-key",
+                        "value": "your-api-key-here"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n  \"email\": \"user@example.com\",\n  \"password\": \"SecurePassword123\"\n}"
+                },
+                "url": {
+                    "raw": "{{base_url}}/v1/api/user/login",
+                    "host": [
+                        "{{base_url}}"
+                    ],
+                    "path": [
+                        "v1",
+                        "api",
+                        "user",
+                        "login"
+                    ]
+                }
+            }
+        },
+        {
+            "name": "4. Resend Verification",
+            "request": {
+                "method": "POST",
+                "header": [
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                    },
+                    {
+                        "key": "x-api-key",
+                        "value": "your-api-key-here"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n  \"email\": \"user@example.com\"\n}"
+                },
+                "url": {
+                    "raw": "{{base_url}}/v1/api/user/resend-verification",
+                    "host": [
+                        "{{base_url}}"
+                    ],
+                    "path": [
+                        "v1",
+                        "api",
+                        "user",
+                        "resend-verification"
+                    ]
+                }
+            }
+        }
+    ],
+    "variable": [
+        {
+            "key": "base_url",
+            "value": "http://localhost:3052"
+        },
+        {
+            "key": "verification_token",
+            "value": "token-from-email"
+        },
+        {
+            "key": "access_token",
+            "value": "jwt-access-token"
+        }
+    ]
+}

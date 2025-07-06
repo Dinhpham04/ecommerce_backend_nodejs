@@ -1,22 +1,44 @@
 'use strict';
 
 const express = require('express');
-const accessController = require('../../controllers/access.controller');
+const accessController = require('../../controllers/access.jwt.controller');
 const { asyncHandler } = require('../../helpers/asyncHandler');
-const { authenticationV2 } = require('../../auth/authUtils');
+const { authentication } = require('../../auth/jwt.auth');
 const router = express.Router();
 
-// signUp 
-router.post('/shop/signup', asyncHandler(accessController.signUp))
-// login 
-router.post('/shop/login', asyncHandler(accessController.login))
+// Public routes (no authentication required)
 
-// authentication // 
-router.use(authenticationV2)
-// logout
-router.post('/shop/logout', asyncHandler(accessController.logout))
-router.post('/shop/handlerRefreshToken', asyncHandler(accessController.handlerRefreshToken))
+// User registration
+router.post('/signup', asyncHandler(accessController.signUp));
+
+// Email verification
+router.get('/verify-email', asyncHandler(accessController.verifyEmail));
+
+// Resend verification email
+router.post('/resend-verification', asyncHandler(accessController.reSendVerifyEmail));
+
+// User login
+router.post('/login', asyncHandler(accessController.login));
 
 
+// Protected routes (authentication required)
+router.use(authentication);
+// Refresh token (can be public or protected depending on implementation)
+router.post('/refresh-token', asyncHandler(accessController.refreshToken));
 
-module.exports = router
+// Logout from current device
+router.post('/logout', asyncHandler(accessController.logout));
+
+// Logout from all devices
+router.post('/logout-all', asyncHandler(accessController.logoutAll));
+
+// Get user sessions
+router.get('/sessions', asyncHandler(accessController.getUserSessions));
+
+// Revoke specific session
+router.delete('/sessions/:deviceId', asyncHandler(accessController.revokeSession));
+
+// Change password
+router.post('/change-password', asyncHandler(accessController.changePassword));
+
+module.exports = router;

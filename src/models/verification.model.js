@@ -7,7 +7,7 @@ const COLLECTION_NAME = 'Verifications'
 
 const verificationSchema = new Schema({
     // Target reference
-    target_id: { type: Schema.Types.ObjectId, required: true, index: true },
+    target_id: { type: Schema.Types.ObjectId, index: true },
     target_type: { type: String, enum: ['user', 'shop'], required: true },
 
     // Verification type

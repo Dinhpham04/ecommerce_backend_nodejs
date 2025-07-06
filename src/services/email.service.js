@@ -1,5 +1,5 @@
 'use strict';
-const { newOtp } = require('./otp.service');
+const { createEmailVerification } = require('./verification.service');
 const { getTemplate } = require('./template.service');
 const transport = require('../dbs/init.nodemailer')
 const { NotFoundError } = require('../core/error.response');
@@ -33,37 +33,51 @@ const sendEmailLinkVerify = ({
 }
 
 const sendEmailToken = async (
-    { email = null }
+    { email = null, target_id = null, target_type = 'user' }
 ) => {
-    // 1. get token 
-    const token = await newOtp({ email })
-    if (!token) {
-        throw new NotFoundError('token not found')
+    // 1. Create email verification record
+    const verification = await createEmailVerification({ 
+        email,
+        target_id,
+        target_type,
+        expires_in_minutes: 5 
+    });
+    
+    if (!verification) {
+        throw new NotFoundError('Cannot create verification token')
     }
-    // 2. get email template 
+    
+    // 2. Get email template 
     const template = await getTemplate({
         tem_name: 'HTML EMAIL TOKEN',
     })
 
     if (!template) {
-        throw new NotFoundError('template not found')
+        throw new NotFoundError('Email template not found')
     }
 
-
-    // 3. replace placeholder
+    // 3. Replace placeholder with verification link
     const content = replacePlaceholder(
         template.tem_html,
         {
-            link_verify: `http://localhost:3052/v1/api/user/verify-email?token=${token.otp_token}`,
+            link_verify: `http://localhost:3052/v1/api/user/verify-email?token=${verification.verification_token}`,
+            verification_code: verification.verification_code,
+            expires_at: verification.expires_at.toLocaleString('vi-VN'),
         }
     )
-    //4. send email 
+    
+    // 4. Send email 
     sendEmailLinkVerify({
         html: content,
         toEmail: email,
         subject: 'Vui lòng xác nhận địa chỉ email đăng ký'
     })
 
+    return {
+        verification_id: verification.verification_id,
+        email: verification.email,
+        expires_at: verification.expires_at
+    };
 }
 
 module.exports = {

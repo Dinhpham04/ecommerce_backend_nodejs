@@ -8,6 +8,8 @@ const app = express();
 const { v4: uuidv4 } = require('uuid')
 const Mylogger = require('./loggers/mylogger.log')
 const { asyncHandler } = require('./helpers/asyncHandler');
+const cookieParser = require('cookie-parser');
+
 
 // init middleware 
 app.use(morgan("dev"));
@@ -15,6 +17,7 @@ app.use(helmet());
 app.use(compression()); // giảm dung lượng vận chuyển
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
+app.use(cookieParser());
 
 // register info api to logger
 app.use((req, res, next) => {
@@ -28,8 +31,12 @@ app.use((req, res, next) => {
     next()
 })
 
-// init db 
-require('./dbs/init.mongodb')
+// connect to db if not test env
+if (process.env.NODE_ENV !== 'test') {
+    // init db 
+    require('./dbs/init.mongodb')
+}
+
 const redisDB = require('./dbs/init.redis')
 redisDB.initRedis()
 
@@ -38,7 +45,6 @@ const ioredis = require('./dbs/init.ioredis')
 ioredis.init({
     IOREDIS_IS_ENABLE: true
 })
-
 // check over load
 const { checkOverLoad } = require('./helpers/check.connect');
 // checkOverLoad(); // check over load 

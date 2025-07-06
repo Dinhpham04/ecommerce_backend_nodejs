@@ -37,6 +37,7 @@ const userSchema = new Schema({
 
     // Authentication
     password: { type: String, required: true, select: false }, // hide by default
+    email_verified_at: { type: Date }, // timestamp when email was verified
     last_login: { type: Date },
     login_attempts: { type: Number, default: 0 }, // số lần đăng nhập không thành công
     locked_until: { type: Date }, // thời gian khóa tài khoản nếu đăng nhập không thành công quá nhiều lần
@@ -73,7 +74,7 @@ const userSchema = new Schema({
     loyalty_points: { type: Number, default: 0 }, // điểm thưởng của người dùng
 
     // Tracking
-    referral_code: { type: String, unique: true, sparse: true }, // mã giới thiệu của người dùng
+    referral_code: { type: String }, // mã giới thiệu của người dùng
     referral_by: { type: Schema.Types.ObjectId, ref: 'User' }, // người giới thiệu, nếu có
     registration_source: { type: String, default: 'direct' },
     last_active: { type: Date, default: Date.now },
@@ -94,7 +95,7 @@ const userSchema = new Schema({
 // Indexes
 userSchema.index({ email: 1, status: 1 })
 userSchema.index({ phone: 1 }, { sparse: true })
-userSchema.index({ referral_code: 1 }, { sparse: true })
+userSchema.index({ referral_code: 1 }, { unique: true, sparse: true })
 userSchema.index({ role: 1, status: 1 })
 userSchema.index({ last_active: 1 })
 
