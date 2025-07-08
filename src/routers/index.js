@@ -13,6 +13,7 @@ router.use('/v1/api/test', require('./test'))
 // JWT Authentication routes
 // Protected routes (will use JWT authentication middleware)
 router.use('/v1/api/auth', require('./access'))
+// router.use('/v1/api/auth/oauth2', require('./oauth2'))
 router.use('/v1/api/user', require('./user'))
 router.use('/v1/api/email', require('./email'))
 router.use('/v1/api/rbac', require('./rbac'))

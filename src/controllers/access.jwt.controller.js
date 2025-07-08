@@ -31,7 +31,7 @@ class AccessController {
             ipAddress
         });
 
-        new CreatedResponse({
+        new SuccessResponse({
             message: result.message,
             metadata: result
         }).send(res);

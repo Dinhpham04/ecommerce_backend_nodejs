@@ -1,0 +1,372 @@
+{
+    "info": {
+        "name": "OAuth2 Authentication API",
+        "description": "Complete OAuth2 authentication flow for Google and Facebook",
+        "version": "1.0.0",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "variable": [
+        {
+            "key": "base_url",
+            "value": "http://localhost:3052",
+            "type": "string"
+        },
+        {
+            "key": "access_token",
+            "value": "",
+            "type": "string"
+        },
+        {
+            "key": "refresh_token",
+            "value": "",
+            "type": "string"
+        }
+    ],
+    "item": [
+        {
+            "name": "OAuth2 - Public Endpoints",
+            "item": [
+                {
+                    "name": "Get Supported Providers",
+                    "request": {
+                        "method": "GET",
+                        "url": "{{base_url}}/v1/api/auth/oauth2/providers",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ]
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Initiate Google OAuth2",
+                    "request": {
+                        "method": "GET",
+                        "url": "{{base_url}}/v1/api/auth/oauth2/google",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ]
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Initiate Facebook OAuth2",
+                    "request": {
+                        "method": "GET",
+                        "url": "{{base_url}}/v1/api/auth/oauth2/facebook",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ]
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Google OAuth2 Callback",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{base_url}}/v1/api/auth/oauth2/google/callback?code=test_code&state=test_state",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "v1",
+                                "api",
+                                "auth",
+                                "oauth2",
+                                "google",
+                                "callback"
+                            ],
+                            "query": [
+                                {
+                                    "key": "code",
+                                    "value": "test_code",
+                                    "description": "Authorization code from Google"
+                                },
+                                {
+                                    "key": "state",
+                                    "value": "test_state",
+                                    "description": "State parameter from initiate request"
+                                }
+                            ]
+                        },
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ]
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Facebook OAuth2 Callback",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{base_url}}/v1/api/auth/oauth2/facebook/callback?code=test_code&state=test_state",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "v1",
+                                "api",
+                                "auth",
+                                "oauth2",
+                                "facebook",
+                                "callback"
+                            ],
+                            "query": [
+                                {
+                                    "key": "code",
+                                    "value": "test_code",
+                                    "description": "Authorization code from Facebook"
+                                },
+                                {
+                                    "key": "state",
+                                    "value": "test_state",
+                                    "description": "State parameter from initiate request"
+                                }
+                            ]
+                        },
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ]
+                    },
+                    "response": []
+                }
+            ]
+        },
+        {
+            "name": "OAuth2 - Protected Endpoints",
+            "item": [
+                {
+                    "name": "Get Linked Providers",
+                    "request": {
+                        "method": "GET",
+                        "url": "{{base_url}}/v1/api/auth/oauth2/linked",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{access_token}}"
+                            }
+                        ]
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Unlink Google Provider",
+                    "request": {
+                        "method": "DELETE",
+                        "url": "{{base_url}}/v1/api/auth/oauth2/google",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{access_token}}"
+                            }
+                        ]
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Unlink Facebook Provider",
+                    "request": {
+                        "method": "DELETE",
+                        "url": "{{base_url}}/v1/api/auth/oauth2/facebook",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{access_token}}"
+                            }
+                        ]
+                    },
+                    "response": []
+                }
+            ]
+        },
+        {
+            "name": "OAuth2 - Error Cases",
+            "item": [
+                {
+                    "name": "Unsupported Provider",
+                    "request": {
+                        "method": "GET",
+                        "url": "{{base_url}}/v1/api/auth/oauth2/twitter",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ]
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Missing Code in Callback",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{base_url}}/v1/api/auth/oauth2/google/callback?state=test_state",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "v1",
+                                "api",
+                                "auth",
+                                "oauth2",
+                                "google",
+                                "callback"
+                            ],
+                            "query": [
+                                {
+                                    "key": "state",
+                                    "value": "test_state"
+                                }
+                            ]
+                        },
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ]
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Missing State in Callback",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{base_url}}/v1/api/auth/oauth2/google/callback?code=test_code",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "v1",
+                                "api",
+                                "auth",
+                                "oauth2",
+                                "google",
+                                "callback"
+                            ],
+                            "query": [
+                                {
+                                    "key": "code",
+                                    "value": "test_code"
+                                }
+                            ]
+                        },
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ]
+                    },
+                    "response": []
+                },
+                {
+                    "name": "OAuth2 Provider Error",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{base_url}}/v1/api/auth/oauth2/google/callback?error=access_denied&error_description=User denied access",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "v1",
+                                "api",
+                                "auth",
+                                "oauth2",
+                                "google",
+                                "callback"
+                            ],
+                            "query": [
+                                {
+                                    "key": "error",
+                                    "value": "access_denied"
+                                },
+                                {
+                                    "key": "error_description",
+                                    "value": "User denied access"
+                                }
+                            ]
+                        },
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ]
+                    },
+                    "response": []
+                }
+            ]
+        },
+        {
+            "name": "OAuth2 - Rate Limiting Test",
+            "item": [
+                {
+                    "name": "Rate Limit Test - Multiple Requests",
+                    "request": {
+                        "method": "GET",
+                        "url": "{{base_url}}/v1/api/auth/oauth2/google",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "X-Forwarded-For",
+                                "value": "192.168.1.100"
+                            }
+                        ]
+                    },
+                    "response": []
+                }
+            ]
+        }
+    ],
+    "event": [
+        {
+            "listen": "test",
+            "script": {
+                "type": "text/javascript",
+                "exec": [
+                    "// Extract access token from successful OAuth2 callback",
+                    "if (pm.response.code === 201 && pm.response.json().metadata && pm.response.json().metadata.tokens) {",
+                    "    pm.environment.set('access_token', pm.response.json().metadata.tokens.accessToken);",
+                    "    pm.environment.set('refresh_token', pm.response.json().metadata.tokens.refreshToken);",
+                    "    console.log('Tokens extracted and saved to environment');",
+                    "}"
+                ]
+            }
+        }
+    ]
+}

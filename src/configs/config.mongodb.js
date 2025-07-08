@@ -1,6 +1,6 @@
 'use strict';
 
-const dev = {
+const development = {
     app: {
         port: process.env.DEV_APP_PORT || 3055,
     },
@@ -11,18 +11,18 @@ const dev = {
     }
 }
 
-const pro = {
+const production = {
     app: {
         port: process.env.PRO_APP_PORT || 3055,
     },
     db: {
         host: process.env.PRO_DB_HOST || 'localhost',
         port: process.env.PRO_DB_PORT || 27017,
-        name: process.env.PRO_DB_NAME || 'shopPRO',
+        name: process.env.PRO_DB_NAME || 'shopDEV',
     }
 }
 
-const config = { dev, pro }
-const env = process.env.NODE_ENV || 'dev';
+const config = { development, production }
+const env = process.env.NODE_ENV || 'development';
 
-module.exports = config[env]
+module.exports = config[env] 

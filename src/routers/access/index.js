@@ -20,6 +20,7 @@ router.post('/resend-verification', asyncHandler(accessController.reSendVerifyEm
 // User login
 router.post('/login', asyncHandler(accessController.login));
 
+router.use('/oauth2', require('../oauth2'));
 
 // Protected routes (authentication required)
 router.use(authentication);
